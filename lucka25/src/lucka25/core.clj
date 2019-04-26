@@ -18,15 +18,17 @@
 ; input is a point [1 2 3 4] and constellations [[[2 3 4 5] [1 3 4 5]] [[8 9 10 11]]]
 (defn add-constellation [constellations point]
 	(remove nil? (let [groups (group-by #(fits-constellation point %) constellations)]
-		(conj (vector (conj (into [] (reduce concat (get groups true))) point))
-			(let [no (get groups nil)]
-			  	(if (some? no) (into [] (apply concat no)) nil))))))
+		(def yes (list (conj (into [] (reduce concat (get groups true))) point)))
+		(def no (let [the-rest (get groups nil)]
+			(if (some? the-rest) (apply concat (vector the-rest)) nil)))
+		(concat yes no))))
+
+(defn create-constellations [points]
+	(reduce add-constellation nil points))
 
 (defn -main
 	[]
 	(let [points (as-> (slurp "resources/input.txt") value
 		(clojure.string/split-lines value)
           	(into [] (map parse-point value)))]
-		;(print points)))
-  		;(println (count (reduce add-constellation nil points)))))
-		(println (reduce add-constellation nil points))))
+		(println (count (create-constellations points)))))
