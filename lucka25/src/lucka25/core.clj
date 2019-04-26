@@ -19,7 +19,8 @@
 (defn add-constellation [constellations point]
 	(remove nil? (let [groups (group-by #(fits-constellation point %) constellations)]
 		(conj (vector (conj (into [] (reduce concat (get groups true))) point))
-			(into [] (mapcat identity (get groups nil)))))))
+			(let [no (get groups nil)]
+			  	(if (some? no) (into [] (apply concat no)) nil))))))
 
 (defn -main
 	[]
@@ -27,4 +28,5 @@
 		(clojure.string/split-lines value)
           	(into [] (map parse-point value)))]
 		;(print points)))
-  		(print (count (reduce add-constellation nil points)))))
+  		;(println (count (reduce add-constellation nil points)))))
+		(println (reduce add-constellation nil points))))
